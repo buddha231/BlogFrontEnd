@@ -1,19 +1,19 @@
-.App {
+/* .App {
   text-align: center;
 }
 
 .App-logo {
   height: 40vmin;
   pointer-events: none;
-}
-
+} */
+/* 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
     animation: App-logo-spin infinite 20s linear;
   }
-}
+} */
 
-.App-header {
+/* .App-header {
   background-color: #282c34;
   min-height: 100vh;
   display: flex;
@@ -32,7 +32,106 @@
   from {
     transform: rotate(0deg);
   }
+
   to {
     transform: rotate(360deg);
   }
+} */
+
+html {
+  scroll-behavior: smooth;
+}
+
+.blog-container a {
+  color: white !important;
+}
+
+.bg-theme {
+  background: #e66b58 !important;
+  color: #fff !important;
+  transition: ease-in-out 0.3s;
+}
+
+.active {
+  text-decoration: underline !important;
+}
+
+.blog__nav:hover {
+  color: rgb(221, 221, 221) !important;
+  transition: ease 0.3s;
+}
+
+.caret-active,
+.like-active {
+  color: blue !important;
+}
+
+#comment-btn:hover,
+#like-button:hover {
+  color: white !important;
+}
+
+.blogs {
+  display: grid;
+  grid-template-columns: repeat(1, 1fr);
+  grid-gap: 20px;
+}
+
+#login-container {
+  width: 35% !important;
+}
+
+#register-container {
+  width: 50%;
+}
+
+@media screen and (max-width: 991px) {
+  #login-container {
+    width: 50% !important;
+  }
+
+  #register-container {
+    width: 80% !important;
+  }
+}
+
+@media screen and (max-width: 550px) {
+  #login-container {
+    width: 100% !important;
+  }
+
+  #register-container {
+    width: 100% !important;
+  }
+
+  .reduce-on-phones-2 {
+    font-size: 30px !important;
+    margin-bottom: 20px !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .blogs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 20px;
+  }
+}
+
+@media (min-width: 1000px) {
+  .blogs {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-gap: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  #nav-container {
+    margin-left: 30px !important;
+  }
+}
+
+.not-active {
+  color: orange !important;
 }
