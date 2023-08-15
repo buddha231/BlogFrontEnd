@@ -1,9 +1,9 @@
-import axios from "axios";
+import axiosInstance from "../axios";
 
-const API_URL = "http://localhost:8000/api/";
+// const  "http://localhost:8000/api/";
 
 const register = (username, first_name, last_name, password) => {
-    return axios.post(API_URL + "accounts/users/", {
+    return axiosInstance.post("accounts/users/", {
         username,
         first_name,
         last_name,
@@ -12,8 +12,8 @@ const register = (username, first_name, last_name, password) => {
 };
 
 const login = (username, password) => {
-    return axios
-        .post(API_URL + "token/", {
+    return axiosInstance
+        .post("token/", {
             username,
             password,
         })

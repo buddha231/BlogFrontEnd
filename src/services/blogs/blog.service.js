@@ -1,31 +1,52 @@
-import axios from 'axios';
+import axiosInstance from '../axios';
 import authHeaders from '../auth/auth-header';
 
-const API_URL = "http://localhost:8000/api/blogs/";
+// const  "http://localhost:8000/api/blogs/";
 
+const BlogPath = 'blogs/';
 const getBlogs = (isExplore = true) => {
     if (isExplore) {
-        return axios.get(API_URL, { headers: authHeaders() });
+        return axiosInstance.get(BlogPath, { headers: authHeaders() });
     } else {
-        return axios.get(API_URL + 'self/', { headers: authHeaders() });
+        return axiosInstance.get(BlogPath + 'self/', { headers: authHeaders() });
     }
 
 };
 
 const getBlog = (id) => {
-    return axios.get(API_URL + id + '/', { headers: authHeaders() });
+    return axiosInstance.get(BlogPath + id + '/', { headers: authHeaders() });
 };
 
 const deleteBlog = (id) => {
-    return axios.delete(API_URL + id + '/');
+    return axiosInstance.delete(BlogPath + id + '/', { headers: authHeaders() });
 };
 
-const updateBlog = (id, data) => {
-    return axios.put(API_URL + id + '/', data);
-};
+const updateBlog = (id, title, description, photo = null) => {
+    if (photo === null) {
+        return axiosInstance.put(
+            BlogPath + id + '/', { title, description },
+            {
+                headers: {
+                    'Authorization': authHeaders()['Authorization'],
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    }
+    const formData = new FormData();
+    formData.append('photo', photo)
+    formData.append('fileName', photo.name)
+    formData.append('title', title)
+    formData.append('description', description)
 
-const likeBlog = (id) => {
-    return axios.get(API_URL + id + '/like/', { headers: authHeaders() });
+    console.log(formData)
+    return axiosInstance.put(
+        BlogPath + id + '/', formData,
+        {
+            headers: {
+                'Authorization': authHeaders()['Authorization'],
+                'Content-Type': 'multipart/form-data',
+            },
+        });
 };
 
 const createBlog = (title, description, photo) => {
@@ -36,9 +57,8 @@ const createBlog = (title, description, photo) => {
     formData.append('photo', photo)
     formData.append('fileName', photo.name)
     console.log(formData)
-    return axios.post(
-        API_URL,
-        formData,
+    return axiosInstance.post(
+        BlogPath, formData,
         {
             headers: {
                 'Authorization': authHeaders()['Authorization'],
@@ -46,6 +66,11 @@ const createBlog = (title, description, photo) => {
             },
         });
 };
+
+const likeBlog = (id) => {
+    return axiosInstance.get(BlogPath + id + '/like/', { headers: authHeaders() });
+};
+
 
 const BlogService = {
     getBlogs,

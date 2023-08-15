@@ -5,27 +5,35 @@ import { useEffect, useState } from 'react';
 function SingleBlog(props) {
     const [blog, setBlog] = useState();
     const [likeCount, setLikeCount] = useState();
-    const [isLike, setIsLike] = useState(false);
+    const [isLike, setIsLike] = useState();
     let style = { color: 'rgb(255, 229, 182)' };
 
-    const { slug } = useParams();
-    console.log(slug)
+    const { id } = useParams();
+    console.log(id)
     useEffect(() => {
         if (localStorage.getItem('user')) {
-            BlogService.getBlog(slug).then(
+            BlogService.getBlog(id).then(
                 (response) => {
                     console.log(response.data);
                     setBlog(response.data);
-                    setIsLike(response.data.like_users.map(user => user.username).includes(localStorage.getItem("username")));
+                    setIsLike(response.data.like_users.map((user) => user.username).includes(localStorage.getItem('username')));
                 }, (error) => {
                     console.log(error);
                 }
             )
         }
-    }, [likeCount, isLike]);
+    }, [likeCount]);
+
+    // useEffect(() => {
+    //     if (blog) {
+    //         console.log(blog.like_users.map((user) => user.username))
+    //         console.log(localStorage.getItem('username'))
+    //         setIsLike(blog.like_users.map((user) => user.username).includes(localStorage.getItem('username')));
+    //     }
+    // }, [blog])
 
     const handleLike = () => {
-        BlogService.likeBlog(slug).then(
+        BlogService.likeBlog(id).then(
             (response) => {
                 console.log(response.data);
                 setLikeCount(response.data.like_count);
@@ -93,7 +101,7 @@ function SingleBlog(props) {
                                         type="button"
                                         onClick={handleLike}
                                     >
-                                        {isLike ? (
+                                        {localStorage.getItem('username') in blog.like_users.map(x => x.username) || isLike ? (
                                             <i className="fas fa-heart like-active">
                                                 Like </i>
                                         ) :

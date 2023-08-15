@@ -20,16 +20,19 @@ function ViewBlogs(props) {
         }
     }, [isExplore]);
 
+    const titleCase = (str) => str.replace(/\b\S/g, t => t.toUpperCase());
     const handleDelete = (id) => {
         BlogService.deleteBlog(id).then(
             (response) => {
                 console.log(response);
                 setBlogs(blogs.filter(blog => blog.id !== id));
+                alert("Blog deleted successfully")
             }, (error) => {
                 console.log(error);
             }
         )
     }
+
 
     return (
         <main>
@@ -83,21 +86,37 @@ function ViewBlogs(props) {
                                         <h5 className="card-title">{blog.title}</h5>
                                         <div style={{ fontSize: '0.9rem' }} className="card-subtitle text-muted">
                                             <i className="fas fa-pen"></i>
-                                            {' '}{blog.author.first_name} {blog.author.last_name}<br />
+                                            {' '}{titleCase(blog.author.first_name)} {titleCase(blog.author.last_name)}<br />
                                             {blog.date}
                                         </div>
                                         <Link to={`/blog/${blog.id}`} className="btn btn-danger my-2" style={{ fontSize: '0.8rem' }}>
                                             Read More
                                         </Link>
                                         <span> </span>
-                                        {localStorage.getItem('username') === blog.author.username ? (
-                                            <a
-                                                className="btn btn-danger my-2"
-                                                onClick={() => { handleDelete(blog.id) }}
-                                                style={{ fontSize: "0.8rem" }}
-                                            > <span> </span>
-                                                <i class="fas fa-trash"></i>
-                                            </a>) : (<span></span>)}
+                                        {
+                                            localStorage.getItem('username') === blog.author.username ?
+                                                (
+                                                    <>
+                                                        <a
+                                                            className="btn btn-danger my-2"
+                                                            onClick={() => { handleDelete(blog.id) }}
+                                                            style={{ fontSize: "0.8rem" }}
+                                                        >
+                                                            <i className="fas fa-trash"></i>
+                                                        </a>
+                                                        <span> </span>
+                                                        <Link
+                                                            to={`/blog/edit/${blog.id}`}
+                                                            edit={true}
+                                                            className="btn btn-danger my-2"
+
+                                                            style={{ fontSize: "0.8rem" }}
+                                                        >
+                                                            <i className="fas fa-edit"></i>
+                                                        </Link>
+                                                    </>
+                                                ) : (<span></span>)
+                                        }
 
                                     </div>
                                 </div>
