@@ -1,4 +1,4 @@
 # BlogFrontEnd
 FrontEnd part of a blogging site. Practice project
 
-Seems like there is no other option than to learn javascript and a frontend framework. So here I'm 
+1st time learning react. React seems fun tbh. This is as far as i could go with 2 days of learning and developing. 
