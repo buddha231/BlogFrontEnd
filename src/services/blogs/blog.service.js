@@ -50,6 +50,16 @@ const updateBlog = (id, title, description, photo = null) => {
 };
 
 const createBlog = (title, description, photo) => {
+    if (photo === null) {
+        return axiosInstance.post(
+            BlogPath + '/', { title, description },
+            {
+                headers: {
+                    'Authorization': authHeaders()['Authorization'],
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+    }
     const formData = new FormData();
     formData.append('title', title)
     formData.append('description', description)

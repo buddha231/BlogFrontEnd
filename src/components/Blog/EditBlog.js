@@ -1,13 +1,11 @@
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import BlogService from '../../services/blogs/blog.service';
-import { useEffect, useRef, useState } from 'react';
-import Message from '../Message.js';
-import BlogNav from '../Navbar/BlogNav';
+import { useEffect, useState } from 'react';
+import Message from '../Message';
 
-const getCurrentDateTime = () => {
+const timeInFormat = (date) => {
 
-
-    const currentDate = new Date();
+    const currentDate = new Date(date);
     const options = { year: 'numeric', month: 'long', day: 'numeric' };
 
     // Format the date
@@ -15,8 +13,9 @@ const getCurrentDateTime = () => {
     return formattedDateTime;
 
 }
-const CreateBlog = () => {
+const EditBlog = () => {
 
+    const { id } = useParams();
 
     let navigate = useNavigate();
 
@@ -24,20 +23,36 @@ const CreateBlog = () => {
     const [photo, setPhoto] = useState(null);
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
+    const [blog, setBlog] = useState([]);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
+    useEffect(() => {
+        BlogService.getBlog(id).then(
+            (response) => {
+                console.log(response.data);
+                setBlog(response.data);
+            }, (error) => {
+                console.log(error);
+            }
+        )
+    }, [])
+    useEffect(() => {
+        if (blog) {
+            setDescription(blog.description);
+            setTitle(blog.title);
+        }
+    }, [blog])
     const handleSubmit = (e) => {
         e.preventDefault();
         setMessage('');
-        setLoading(true);
-        BlogService.createBlog(title, description, photo).then(
+        setLoading(true)
+        BlogService.updateBlog(id, title, description, photo).then(
             (response) => {
                 setLoading(false);
                 console.log(response.data);
-                setTimeout(() => { setMessage("Blog created Successfully") }, 2000)
-                // window.location.reload()
-                navigate('/blogs/explore/', { state: { message: 'Blog created successfully', type: "success" } })
+                // alert('Blog updated successfully');
+                navigate('/blogs/explore/', { state: { message: 'Blog updated successfully', type: "success" } })
             }, (error) => {
                 console.error(error)
                 const resMessage =
@@ -48,9 +63,7 @@ const CreateBlog = () => {
                     error.toString();
                 setLoading(false);
                 console.log(error);
-                const resMessageString = resMessage.toString();
-                setTimeout(() => { setMessage(resMessageString) }, 3000)
-
+                setMessage(resMessage)
             }
         )
 
@@ -60,12 +73,18 @@ const CreateBlog = () => {
     return (
         <main>
             <div className="container my-5 bg-light">
-                <BlogNav create={false} explore={true} myblog={false} />
+                <div className="row bg-theme py-3">
+                    <div id="blog-nav" className="col-md-4 col-6 d-flex align-items-center">
+                        <Link to={'/blogs/explore'} className="text-light blog__nav">
+                            Explore
+                        </Link>
+                    </div>
+                </div>
 
                 <div className="px-4 py-5">
                     <h3 className="mb-4">Create Post</h3>
 
-                    <form encType="multipart/form-data">
+                    <form onSubmit={() => { return false; }} encType="multipart/form-data">
                         {/* {% csrf_token %} */}
                         <div className="row mb-3">
                             <div className="col-md-6">
@@ -76,6 +95,7 @@ const CreateBlog = () => {
                                     name="title"
                                     autoComplete="off"
                                     onChange={(e) => setTitle(e.target.value)}
+                                    value={title || blog.title}
 
                                     required
                                 />
@@ -85,7 +105,7 @@ const CreateBlog = () => {
                                 <input
                                     className="form-control"
                                     type="text"
-                                    value={getCurrentDateTime()}
+                                    value={blog.date}
                                     disabled
                                 />
                             </div>
@@ -101,10 +121,10 @@ const CreateBlog = () => {
                                         className="custom-file-input"
                                         name="photo"
                                         onChange={(e) => setPhoto(e.target.files[0])}
+                                        defaultValue={photo}
                                         required
                                     />
                                     <label className="custom-file-label" htmlFor="blog_pic">
-                                        Choose File
                                     </label>
                                 </div>
                             </div>
@@ -120,7 +140,8 @@ const CreateBlog = () => {
                                         rows="10"
                                         name="description"
                                         onChange={(e) => setDescription(e.target.value)}
-                                        required
+                                        value={description || blog.description}
+
                                     ></textarea>
                                 </div>
                             </div>
@@ -132,24 +153,28 @@ const CreateBlog = () => {
                                     type="submit"
                                     className="btn btn-success"
                                     value="Publish Blog"
-                                    disabled={loading}
                                     onClick={handleSubmit}
                                 >
                                     {loading && (<span className="spinner-border spinner-border-sm"></span>)}
-                                    <span> Publish Blog</span>
+                                    <span>Update blog</span>
                                 </button>
                             </div>
-
-                            {message && (
-                                <Message message={message} type="danger" />
-                            )}
                         </div>
+
+                        {message && (
+                            <div className="form-group mt-3">
+                                <div className="alert alert-danger" role="alert">
+                                    {message && (
+                                        <Message message={message} type="danger" />
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </form>
                 </div>
-            </div>
+            </div >
         </main >
     );
 };
 
-export default CreateBlog;
-
+export default EditBlog;

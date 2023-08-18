@@ -1,14 +1,19 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import BlogService from '../../services/blogs/blog.service';
 import { useEffect, useState } from 'react';
 import BlogNav from '../Navbar/BlogNav';
+import Message from '../Message';
 
-function ViewBlogs(props) {
+function ViewBlogs() {
     const [blogs, setBlogs] = useState([]);
     const [isExplore, setIsExplore] = useState(true);
+    const [message, setMessage] = useState({})
+    const location = useLocation();
     let style = { color: 'rgb(255, 229, 182)' };
     useEffect(() => {
-        if (localStorage.getItem('user')) {
+        setMessage(location.state ? { "message": location.state.message, "type": location.state.type } : {})
+        setTimeout(() => { setMessage('') }, 3000)
+        if (localStorage.getItem('user') || isExplore) {
             BlogService.getBlogs(isExplore).then(
                 (response) => {
                     console.log(response.data);
@@ -25,8 +30,9 @@ function ViewBlogs(props) {
         BlogService.deleteBlog(id).then(
             (response) => {
                 console.log(response);
+                setMessage({ message: "blog deleted successfully", type: "success" })
+                setTimeout(() => { setMessage('') }, 3000)
                 setBlogs(blogs.filter(blog => blog.id !== id));
-                alert("Blog deleted successfully")
             }, (error) => {
                 console.log(error);
             }
@@ -43,14 +49,14 @@ function ViewBlogs(props) {
                         {localStorage.getItem('user') ? (
                             <Link className="px-md-3 px-2 blog__nav"
                                 onClick={() => { setIsExplore(!isExplore) }}
-                                style={isExplore ? {} : style}
+                                style={isExplore ? { color: 'white' } : style}
                             >
                                 My Blog
                             </Link>) : <span> </span>
                         }
                         <Link onClick={() => setIsExplore(true)}
                             className="blog__nav"
-                            style={isExplore ? style : {}}
+                            style={isExplore ? style : { color: 'white' }}
                         >
                             Explore
                         </Link>
@@ -66,6 +72,9 @@ function ViewBlogs(props) {
                     }
                 </div>
                 <section className="main-content px-md-4 px-3 py-5">
+                    {message && (
+                        <Message message={message.message} type={message.type} />
+                    )}
                     {blogs.length === 0 ? (
                         <h3 className="mb-4">Explore Blogs From Other Bloggers</h3>
                     ) : (
@@ -94,16 +103,16 @@ function ViewBlogs(props) {
                                         </Link>
                                         <span> </span>
                                         {
-                                            localStorage.getItem('username') === blog.author.username ?
+                                            localStorage.getItem('user') && localStorage.getItem('username') === blog.author.username ?
                                                 (
                                                     <>
-                                                        <a
+                                                        <Link
                                                             className="btn btn-danger my-2"
                                                             onClick={() => { handleDelete(blog.id) }}
                                                             style={{ fontSize: "0.8rem" }}
                                                         >
                                                             <i className="fas fa-trash"></i>
-                                                        </a>
+                                                        </Link>
                                                         <span> </span>
                                                         <Link
                                                             to={`/blog/edit/${blog.id}`}
@@ -121,6 +130,7 @@ function ViewBlogs(props) {
                                     </div>
                                 </div>
                             ))}
+
                         </div>
                     )}
                 </section>

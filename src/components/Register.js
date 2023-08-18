@@ -39,7 +39,7 @@ function Register() {
             AuthService.register(username, first_name, last_name, password).then(
                 () => {
                     navigate("/Login");
-                    window.location.reload();
+                    // window.location.reload();
                 },
                 (error) => {
                     console.log(error)
