@@ -1,6 +1,6 @@
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import BlogService from '../../services/blogs/blog.service';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import Message from '../Message.js';
 import BlogNav from '../Navbar/BlogNav';
 
@@ -27,35 +27,33 @@ const CreateBlog = () => {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState('');
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
         setLoading(true);
-        BlogService.createBlog(title, description, photo).then(
-            (response) => {
-                setLoading(false);
-                console.log(response.data);
-                setTimeout(() => { setMessage("Blog created Successfully") }, 2000)
-                // window.location.reload()
-                navigate('/blogs/explore/', { state: { message: 'Blog created successfully', type: "success" } })
-            }, (error) => {
-                console.error(error)
-                const resMessage =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.detail) ||
-                    error.message ||
-                    error.toString();
-                setLoading(false);
-                console.log(error);
-                const resMessageString = resMessage.toString();
-                setTimeout(() => { setMessage(resMessageString) }, 3000)
+        try {
+            const response = await BlogService.createBlog(title, description, photo)
+            setLoading(false);
+            console.log(response.data);
+            navigate('/blogs/explore/', { state: { message: 'Blog created successfully', type: "success" } })
 
-            }
-        )
+        }
+        catch (error) {
+            console.error(error)
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.detail) ||
+                error.message ||
+                error.toString();
+            setLoading(false);
+            console.log(error);
+            const resMessageString = resMessage.toString();
+            setTimeout(() => { setMessage(resMessageString) }, 3000)
+
+        }
 
     }
-
 
     return (
         <main>

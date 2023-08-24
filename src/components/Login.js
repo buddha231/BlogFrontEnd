@@ -29,7 +29,7 @@ function Login(props) {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
 
         setMessage("");
@@ -38,23 +38,21 @@ function Login(props) {
         form.current.validateAll();
 
         if (checkBtn.current.context._errors.length === 0) {
-            AuthService.login(username, password).then(
-                () => {
-                    navigate("/Blogs/Explore/");
-                    // window.location.reload();
-                },
-                (error) => {
-                    console.log(error)
-                    const resMessage =
-                        (error.response &&
-                            error.response.data &&
-                            error.response.data.detail) ||
-                        error.message ||
-                        error.toString();
-                    setLoading(false);
-                    setMessage(resMessage);
-                }
-            );
+            try {
+                await AuthService.login(username, password);
+                navigate("/Blogs/Explore/");
+                // window.location.reload();
+            } catch (error) {
+                console.log(error);
+                const resMessage =
+                    (error.response &&
+                        error.response.data &&
+                        error.response.data.detail) ||
+                    error.message ||
+                    error.toString();
+                setLoading(false);
+                setMessage(resMessage);
+            }
         } else {
             setLoading(false);
         }

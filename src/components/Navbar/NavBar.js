@@ -7,10 +7,17 @@ import AuthService from '../../services/auth/auth.service'
 function NavBar() {
     let navigate = useNavigate();
 
-    const handleLogout = () => {
-        AuthService.logout();
+    const handleLogout = async () => {
+        try {
+            const response = await AuthService.logout();
+            console.log("logged out")
+            navigate("/")
+        }
+        catch (error) {
+            console.err(error)
+        }
+
         // window.location.reload();
-        navigate("/")
     }
 
     return (
@@ -18,16 +25,14 @@ function NavBar() {
             <div className="container">
                 <Link to="/blogs/explore" className="navbar-brand d-flex justify-content-space-between" >blogapp</Link>
                 <div>
-                    {/* <a className="navbar-brand btn btn-danger" style={{ fontSize: '17px', color: '#fff' }} href="/account/login/">login</a>
-                    <a id="nav-button" className="navbar-brand btn btn-outline-danger" style={{ fontSize: '17px' }} href="/account/register/">signup</a> */}
-                    {AuthService.getCurrentUser() ? (
-                        <a
+                    {localStorage.getItem('user') ? (
+                        <span
                             id="nav-button"
                             className="navbar-brand btn btn-outline-danger"
                             style={{ fontSize: '17px' }}
                             onClick={handleLogout}
                         >
-                            logout </a>) : (
+                            logout </span>) : (
                         <>
                             <Link to="/login/" className="navbar-brand btn btn-danger" style={{ fontSize: '17px', color: '#fff' }}>
                                 Login

@@ -13,32 +13,33 @@ function ViewBlogs() {
     useEffect(() => {
         setMessage(location.state ? { "message": location.state.message, "type": location.state.type } : {})
         setTimeout(() => { setMessage('') }, 3000)
-        if (localStorage.getItem('user') || isExplore) {
-            BlogService.getBlogs(isExplore).then(
-                (response) => {
+        const fetchData = async () => {
+            if (localStorage.getItem('user') || isExplore) {
+                try {
+                    const response = await BlogService.getBlogs(isExplore);
                     console.log(response.data);
                     setBlogs(response.data);
-                }, (error) => {
+                } catch (error) {
                     console.log(error);
                 }
-            )
+            }
         }
+        fetchData();
     }, [isExplore]);
 
     const titleCase = (str) => str.replace(/\b\S/g, t => t.toUpperCase());
-    const handleDelete = (id) => {
-        BlogService.deleteBlog(id).then(
-            (response) => {
-                console.log(response);
-                setMessage({ message: "blog deleted successfully", type: "success" })
-                setTimeout(() => { setMessage('') }, 3000)
-                setBlogs(blogs.filter(blog => blog.id !== id));
-            }, (error) => {
-                console.log(error);
-            }
-        )
-    }
+    const handleDelete = async (id) => {
 
+        try {
+            const response = await BlogService.deleteBlog(id);
+            console.log(response);
+            setMessage({ message: "blog deleted successfully", type: "success" })
+            setTimeout(() => { setMessage('') }, 3000)
+            setBlogs(blogs.filter(blog => blog.id !== id));
+        } catch (error) {
+            console.error(error);
+        }
+    }
 
     return (
         <main>

@@ -27,7 +27,7 @@ function Register() {
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState("");
 
-    const handleRegister = (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
 
         setMessage("");
@@ -36,22 +36,21 @@ function Register() {
         form.current.validateAll();
 
         if (checkBtn.current.context._errors.length === 0) {
-            AuthService.register(username, first_name, last_name, password).then(
-                () => {
-                    navigate("/Login");
-                    // window.location.reload();
-                },
-                (error) => {
-                    console.log(error)
-                    const resMessage =
-                        (error.response &&
-                            error.response.data.toString()) ||
-                        error.message ||
-                        error.toString();
-                    setLoading(false);
-                    setMessage(resMessage);
-                }
-            );
+            try {
+                await AuthService.register(username, first_name, last_name, password);
+                navigate("/Login");
+            }
+            catch (error) {
+                console.log(error)
+                const resMessage =
+                    (error.response &&
+                        error.response.data.toString()) ||
+                    error.message ||
+                    error.toString();
+                setLoading(false);
+                setMessage(resMessage);
+            }
+
         } else {
             setLoading(false);
         }

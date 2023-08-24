@@ -28,45 +28,46 @@ const EditBlog = () => {
     const [message, setMessage] = useState('');
 
     useEffect(() => {
-        BlogService.getBlog(id).then(
-            (response) => {
-                console.log(response.data);
+        const fetchData = async () => {
+            try {
+                const response = await BlogService.getBlog(id);
+                console.log(response.data)
                 setBlog(response.data);
-            }, (error) => {
-                console.log(error);
             }
-        )
+            catch (error) {
+                console.log(error)
+            }
+        }
+        fetchData();
     }, [])
+
     useEffect(() => {
         if (blog) {
             setDescription(blog.description);
             setTitle(blog.title);
         }
     }, [blog])
-    const handleSubmit = (e) => {
+
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setMessage('');
         setLoading(true)
-        BlogService.updateBlog(id, title, description, photo).then(
-            (response) => {
-                setLoading(false);
-                console.log(response.data);
-                // alert('Blog updated successfully');
-                navigate('/blogs/explore/', { state: { message: 'Blog updated successfully', type: "success" } })
-            }, (error) => {
-                console.error(error)
-                const resMessage =
-                    (error.response &&
-                        error.response.data &&
-                        error.response.data.detail) ||
-                    error.message ||
-                    error.toString();
-                setLoading(false);
-                console.log(error);
-                setMessage(resMessage)
-            }
-        )
-
+        try {
+            await BlogService.updateBlog(id, title, description, photo);
+            navigate('/blogs/explore/', { state: { message: 'Blog updated successfully', type: "success" } })
+        }
+        catch (error) {
+            console.error(error)
+            const resMessage =
+                (error.response &&
+                    error.response.data &&
+                    error.response.data.detail) ||
+                error.message ||
+                error.toString();
+            setLoading(false);
+            console.log(error);
+            setMessage(resMessage)
+        }
     }
 
 

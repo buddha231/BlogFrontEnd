@@ -1,9 +1,9 @@
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import BlogService from '../../services/blogs/blog.service';
 import { useEffect, useState } from 'react';
 import BlogNav from '../Navbar/BlogNav';
 
-function SingleBlog(props) {
+function SingleBlog() {
     const [blog, setBlog] = useState();
     const [likeCount, setLikeCount] = useState();
     const [isLike, setIsLike] = useState();
@@ -12,34 +12,31 @@ function SingleBlog(props) {
     const { id } = useParams();
     console.log(id)
     useEffect(() => {
-        // if (localStorage.getItem('user')) {
-        BlogService.getBlog(id).then(
-            (response) => {
-                console.log(response.data);
+        const fetchData = async () => {
+            try {
+                const response = await BlogService.getBlog(id);
+                console.log(response.data)
                 setBlog(response.data);
                 setIsLike(response.data.like_users.map((user) => user.username).includes(localStorage.getItem('username')));
-            }, (error) => {
-                console.log(error);
             }
-        )
-        // }
+            catch (error) {
+                console.log(error)
+            }
+        }
+        fetchData();
     }, [likeCount]);
 
-    // useEffect(() => {
-    //     if (blog) {
-    //         console.log(blog.like_users.map((user) => user.username))
-    //         console.log(localStorage.getItem('username'))
-    //         setIsLike(blog.like_users.map((user) => user.username).includes(localStorage.getItem('username')));
-    //     }
-    // }, [blog])
 
-    const handleLike = () => {
-        BlogService.likeBlog(id).then(
-            (response) => {
-                console.log(response.data);
-                setLikeCount(response.data.like_count);
-            }
-        )
+    const handleLike = async () => {
+        try {
+            const response = await BlogService.likeBlog(id);
+            console.log(response.data);
+            setLikeCount(response.data.like_count);
+        }
+        catch (error) {
+            console.error(error)
+
+        }
     }
     return (
         <main>

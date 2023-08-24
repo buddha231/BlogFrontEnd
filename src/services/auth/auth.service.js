@@ -1,40 +1,54 @@
 import axiosInstance from "../axios";
 
-// const  "http://localhost:8000/api/";
-
-const register = (username, first_name, last_name, password) => {
-    return axiosInstance.post("accounts/users/", {
-        username,
-        first_name,
-        last_name,
-        password,
-    });
+const register = async (username, first_name, last_name, password) => {
+    try {
+        const response = await axiosInstance.post("accounts/users/", {
+            username,
+            first_name,
+            last_name,
+            password,
+        });
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
 };
 
-const login = (username, password) => {
-    return axiosInstance
-        .post("token/", {
+const login = async (username, password) => {
+    try {
+        const response = await axiosInstance.post("token/", {
             username,
             password,
-        })
-        .then((response) => {
-            if (response.data.access) {
-                localStorage.setItem("user", JSON.stringify(response.data));
-                localStorage.setItem("username", username);
-            }
-
-            return response.data;
         });
+
+        if (response.data.access) {
+            localStorage.setItem("user", JSON.stringify(response.data));
+            localStorage.setItem("username", username);
+        }
+
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
 };
 
-const logout = () => {
-    localStorage.removeItem("user");
-    localStorage.removeItem("username");
+const logout = async () => {
+    try {
+        localStorage.removeItem("user");
+        localStorage.removeItem("username");
+        console.log("userDeleted")
+    } catch (error) {
+        throw error;
+    }
 };
 
-const getCurrentUser = () => {
-    const user = JSON.parse(localStorage.getItem("user"));
-    return user
+const getCurrentUser = async () => {
+    try {
+        const user = JSON.parse(localStorage.getItem("user"));
+        return user;
+    } catch (error) {
+        throw error;
+    }
 };
 
 const AuthService = {
